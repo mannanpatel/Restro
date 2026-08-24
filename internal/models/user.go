@@ -6,25 +6,27 @@ import (
 
 type User struct {
 	gorm.Model
-	FirstName string `json:"firstName" gorm:"not null"`
-	LastName  string `json:"lastName" gorm:"not null"`
-	Email     string `json:"email" gorm:"uniqueIndex;not null"`
-	Password  string `json:"password" gorm:"not null"`
-	CartId    string `json:"cartId"`
+	FirstName string `json:"first_name" binding:"required" gorm:"not null"`
+	LastName  string `json:"last_name" binding:"required" gorm:"not null"`
+	Email     string `json:"email" binding:"required,email" gorm:"uniqueIndex;not null"`
+	Password  string `json:"password" binding:"required,min=8,max=1280"`
+	CartId    string `json:"cart_id"`
 	Address   string `json:"address"`
 	Type      string `json:"type"`
-	Role      string `json:"role" gorm:"default:'user'"`
+	Role      string `json:"role" gorm:"default:user"`
 	Age       int    `json:"age"`
-	IsActive  bool   `json:"isActive" gorm:"default:true"`
+	IsActive  bool   `json:"is_active" gorm:"default:true"`
 }
 
-type UserDetails struct {
-	ID        uint   `json:"id,omitempty"`
-	FirstName string `json:"firstName,omitempty" binding:"required"`
-	LastName  string `json:"lastName,omitempty" binding:"required"`
-	Email     string `json:"email" binding:"required,email"`
-	Password  string `json:"password,omitempty" binding:"required,min=6"`
-	Role      string `json:"role" binding:"omitempty,oneof=admin user"`
+type UpdateUserRequest struct {
+	FirstName *string `json:"first_name"`
+	LastName  *string `json:"last_name"`
+	Email     *string `json:"email"`
+	CartId    *string `json:"cart_id"`
+	Address   *string `json:"address"`
+	Type      *string `json:"type"`
+	Age       *int    `json:"age"`
+	IsActive  *bool   `json:"is_active"`
 }
 
 type UserLoginRequest struct {
@@ -33,7 +35,7 @@ type UserLoginRequest struct {
 }
 
 type UserLoginResponse struct {
-	UserId string `json:"userId"`
+	UserId string `json:"user_id"`
 	Email  string `json:"email"`
 	Role   string `json:"role"`
 	Token  string `json:"token"`
