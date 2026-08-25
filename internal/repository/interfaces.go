@@ -21,4 +21,7 @@ type IUserRepository interface {
 	FindUserByEmail(email string) (*models.User, error)
 	GetUserById(id int) (*models.User, error)
 	UpdateUser(id int, req *models.UpdateUserRequest) error
+	DeleteUser(id int) error
+	ListUsers(ctx context.Context) ([]*models.User, error)
+	UpdateUserRole(id int, Role string) error
 }

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -100,6 +101,34 @@ func (ur *userRepository) UpdateUser(id int, user *models.UpdateUserRequest) err
 
 	if result.RowsAffected == 0 {
 		return fmt.Errorf("user not found")
+	}
+
+	return nil
+}
+
+func (ur *userRepository) DeleteUser(id int) error {
+	err := database.DB.Where("id = ?", id).Delete(&models.User{}).Error
+	if err != nil {
+		return fmt.Errorf("failed to delete user: %w", err)
+	}
+
+	return nil
+}
+
+func (ur *userRepository) ListUsers(ctx context.Context) ([]*models.User, error) {
+	var users []*models.User
+	err := database.DB.WithContext(ctx).Find(&users).Error
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch users: %w", err)
+	}
+	return users, nil
+}
+
+func (ur *userRepository) UpdateUserRole(id int, role string) error {
+
+	err := database.DB.Model(&models.User{}).Where("id = ?", id).Update("type", role).Error
+	if err != nil {
+		return fmt.Errorf("failed to update user role: %w", err)
 	}
 
 	return nil

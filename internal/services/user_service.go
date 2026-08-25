@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -98,6 +99,41 @@ func (s *userService) UpdateUser(id int, user *models.UpdateUserRequest) error {
 	err := s.repository.UpdateUser(id, user)
 	if err != nil {
 		return fmt.Errorf("failed to update user: %w", err)
+	}
+	return nil
+}
+
+func (s *userService) DeleteUser(id int) error {
+	if id <= 0 {
+		return fmt.Errorf("invalid user id")
+	}
+
+	if err := s.repository.DeleteUser(id); err != nil {
+		return fmt.Errorf("failed to delete user: %w", err)
+	}
+
+	return nil
+}
+
+func (s *userService) ListUsers(ctx context.Context) ([]*models.User, error) {
+	users, err := s.repository.ListUsers(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch users: %w", err)
+	}
+	return users, nil
+}
+
+func (s *userService) UpdateUserRole(id int, role string) error {
+	if id <= 0 {
+		return fmt.Errorf("invalid user id")
+	}
+	if role == "" || (role != "admin" && role != "user") {
+		return fmt.Errorf("invalid role")
+	}
+
+	err := s.repository.UpdateUserRole(id, role)
+	if err != nil {
+		return fmt.Errorf("failed to update user role: %w", err)
 	}
 	return nil
 }
