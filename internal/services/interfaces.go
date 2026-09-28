@@ -23,3 +23,7 @@ type IProductService interface {
 	UpdateProduct(ctx context.Context, id int, product *models.UpdateProductRequest) error
 	DeleteProduct(ctx context.Context, id int) error
 }
+
+type ICartService interface {
+	AddToCart(ctx context.Context, userID int, req models.AddCartItemRequest) error
+}

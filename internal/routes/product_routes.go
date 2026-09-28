@@ -25,3 +25,15 @@ func registerProductRoutes(r *gin.Engine) {
 		productPrivate.DELETE("/:id", productController.DeleteProduct)
 	}
 }
+
+// GET    /products
+// GET    /products/:id
+// POST   /products
+// PATCH  /products/:id
+// DELETE /products/:id
+
+// GET    /admin/products
+// GET    /admin/products/:id
+// POST   /admin/products
+// PATCH  /admin/products/:id
+// DELETE /admin/products/:id

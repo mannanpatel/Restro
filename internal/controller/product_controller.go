@@ -47,7 +47,7 @@ func (pc *ProductController) GetProductById(c *gin.Context) {
 		return
 	}
 	id, err := strconv.Atoi(idstr)
-	if err != nil {
+	if err != nil || id <= 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "'id' must be a valid integer",
 		})
@@ -135,7 +135,7 @@ func (pc *ProductController) UpdateProduct(c *gin.Context) {
 // DELETE /products/:id
 func (pc *ProductController) DeleteProduct(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
+	if err != nil || id <= 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "invalid product id",
 		})

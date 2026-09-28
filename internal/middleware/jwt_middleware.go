@@ -1,7 +1,10 @@
 package middleware
 
 import (
+	"errors"
+	"math"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -18,6 +21,9 @@ func JWTMiddleware() gin.HandlerFunc {
 		}
 
 		token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+			if t.Method.Alg() != jwt.SigningMethodHS256.Alg() {
+				return nil, errors.New("unexpected signing method")
+			}
 			return []byte(config.AppConfig.Server.JwtSecret), nil
 		})
 		if err != nil || !token.Valid {
@@ -25,12 +31,29 @@ func JWTMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		claims := token.Claims.(jwt.MapClaims)
-		c.Set("user_id", claims["user_id"])
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token claims"})
+			return
+		}
+		userID, ok := userIDFromClaim(claims["user_id"])
+		if !ok {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token claims"})
+			return
+		}
+		c.Set("user_id", userID)
 		c.Set("email", claims["email"])
 		c.Set("role", claims["role"])
 		c.Next()
 	}
+}
+
+func userIDFromClaim(value interface{}) (int, bool) {
+	id, ok := value.(float64)
+	if !ok || id <= 0 || math.Trunc(id) != id || id >= math.Ldexp(1, strconv.IntSize-1) {
+		return 0, false
+	}
+	return int(id), true
 }
 
 func AdminOnly() gin.HandlerFunc {

@@ -5,27 +5,34 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/mannanpatel/Restro/common/database"
 	"github.com/mannanpatel/Restro/internal/models"
+	"gorm.io/gorm"
 )
 
-type userRepository struct{}
+type userRepository struct {
+	db *gorm.DB
+}
 
-func NewUserRepository() IUserRepository {
-	return &userRepository{}
+func NewUserRepository(db *gorm.DB) IUserRepository {
+	return &userRepository{
+		db: db,
+	}
 }
 
 // RegisterUser registers a new user
 func (ur *userRepository) RegisterUserWithProfile(user *models.User) error {
 	// Check if user already exists
 	var existing models.User
-	err := database.DB.Where("email = ?", user.Email).First(&existing).Error
+	err := ur.db.Where("email = ?", user.Email).First(&existing).Error
 	if err == nil {
 		return errors.New("user already exists")
 	}
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return fmt.Errorf("failed to check existing user: %w", err)
+	}
 
 	// Create user
-	result := database.DB.Create(user)
+	result := ur.db.Create(user)
 	if result.Error != nil {
 		return fmt.Errorf("failed to register user: %w", result.Error)
 	}
@@ -36,7 +43,7 @@ func (ur *userRepository) RegisterUserWithProfile(user *models.User) error {
 // FindUserByEmail finds a user by email
 func (ur *userRepository) FindUserByEmail(email string) (*models.User, error) {
 	var user models.User
-	err := database.DB.Where("email = ?", email).First(&user).Error
+	err := ur.db.Where("email = ?", email).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +53,7 @@ func (ur *userRepository) FindUserByEmail(email string) (*models.User, error) {
 // GetUserById fetches a user by ID
 func (ur *userRepository) GetUserById(id int) (*models.User, error) {
 	var user models.User
-	err := database.DB.Where("id = ?", id).First(&user).Error
+	err := ur.db.Where("id = ?", id).First(&user).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch user: %w", err)
 	}
@@ -93,7 +100,7 @@ func (ur *userRepository) UpdateUser(id int, user *models.UpdateUserRequest) err
 		return fmt.Errorf("no fields to update")
 	}
 
-	result := database.DB.Model(&models.User{}).Where("id = ?", id).Updates(updates)
+	result := ur.db.Model(&models.User{}).Where("id = ?", id).Updates(updates)
 
 	if result.Error != nil {
 		return fmt.Errorf("failed to update user: %w", result.Error)
@@ -107,7 +114,7 @@ func (ur *userRepository) UpdateUser(id int, user *models.UpdateUserRequest) err
 }
 
 func (ur *userRepository) DeleteUser(id int) error {
-	err := database.DB.Where("id = ?", id).Delete(&models.User{}).Error
+	err := ur.db.Where("id = ?", id).Delete(&models.User{}).Error
 	if err != nil {
 		return fmt.Errorf("failed to delete user: %w", err)
 	}
@@ -117,7 +124,7 @@ func (ur *userRepository) DeleteUser(id int) error {
 
 func (ur *userRepository) ListUsers(ctx context.Context) ([]*models.User, error) {
 	var users []*models.User
-	err := database.DB.WithContext(ctx).Find(&users).Error
+	err := ur.db.WithContext(ctx).Find(&users).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch users: %w", err)
 	}
@@ -125,10 +132,12 @@ func (ur *userRepository) ListUsers(ctx context.Context) ([]*models.User, error)
 }
 
 func (ur *userRepository) UpdateUserRole(id int, role string) error {
-
-	err := database.DB.Model(&models.User{}).Where("id = ?", id).Update("type", role).Error
-	if err != nil {
-		return fmt.Errorf("failed to update user role: %w", err)
+	result := ur.db.Model(&models.User{}).Where("id = ?", id).Update("role", role)
+	if result.Error != nil {
+		return fmt.Errorf("failed to update user role: %w", result.Error)
+	}
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("user not found")
 	}
 
 	return nil

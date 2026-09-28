@@ -22,7 +22,12 @@ func NewUserService(repository repository.IUserRepository) IUserService {
 }
 
 func (s *userService) Register(user *models.User) error {
-	// Implementation for registering a new user
+	if user == nil {
+		return errors.New("user cannot be nil")
+	}
+	user.ID = 0
+	user.Role = "user"
+	user.IsActive = true
 
 	hashed, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -42,6 +47,9 @@ func (s *userService) Register(user *models.User) error {
 func (s *userService) Login(req models.UserLoginRequest) (*models.UserLoginResponse, error) {
 	user, err := s.repository.FindUserByEmail(req.Email)
 	if err != nil {
+		return nil, errors.New("invalid email or password")
+	}
+	if !user.IsActive {
 		return nil, errors.New("invalid email or password")
 	}
 

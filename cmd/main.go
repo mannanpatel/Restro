@@ -24,7 +24,7 @@ func main() {
 	}
 
 	// db connect
-	database.DBConnection(cfg)
+	db := database.DBConnection(cfg)
 
 	// gin mode
 	gin.SetMode(cfg.Server.Mode)
@@ -33,7 +33,7 @@ func main() {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	routes.SetupRoutes(r)
+	routes.SetupRoutes(r, db)
 
 	// Step 6 — Health check
 	r.GET("/health", func(c *gin.Context) {

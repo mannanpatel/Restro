@@ -25,3 +25,8 @@ type IUserRepository interface {
 	ListUsers(ctx context.Context) ([]*models.User, error)
 	UpdateUserRole(id int, Role string) error
 }
+
+type ICartRepository interface {
+	AddOrUpdateCartItem(ctx context.Context, userID int, productID int, qty int, price float64) error
+	// GetCartByUserID(ctx context.Context, userID uint) (*models.Cart, error)
+}

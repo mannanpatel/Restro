@@ -9,13 +9,23 @@ type User struct {
 	FirstName string `json:"first_name" binding:"required" gorm:"not null"`
 	LastName  string `json:"last_name" binding:"required" gorm:"not null"`
 	Email     string `json:"email" binding:"required,email" gorm:"uniqueIndex;not null"`
-	Password  string `json:"password" binding:"required,min=8,max=1280"`
+	Password  string `json:"-" gorm:"not null"`
 	CartId    string `json:"cart_id"`
 	Address   string `json:"address"`
 	Type      string `json:"type"`
 	Role      string `json:"role" gorm:"default:user"`
 	Age       int    `json:"age"`
 	IsActive  bool   `json:"is_active" gorm:"default:true"`
+}
+
+type UserRegistrationRequest struct {
+	FirstName string `json:"first_name" binding:"required"`
+	LastName  string `json:"last_name" binding:"required"`
+	Email     string `json:"email" binding:"required,email"`
+	Password  string `json:"password" binding:"required,min=8,max=1280"`
+	Address   string `json:"address"`
+	Type      string `json:"type"`
+	Age       int    `json:"age"`
 }
 
 type UpdateUserRequest struct {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mannanpatel/Restro/common/database"
 	"github.com/mannanpatel/Restro/internal/models"
 	"gorm.io/gorm"
 )
@@ -13,9 +12,9 @@ type productRepository struct {
 	db *gorm.DB
 }
 
-func NewProductRepository() IProductRepository {
+func NewProductRepository(db *gorm.DB) IProductRepository {
 	return &productRepository{
-		db: database.DB,
+		db: db,
 	}
 }
 
@@ -108,10 +107,6 @@ func (pr *productRepository) UpdateProduct(ctx context.Context, id int, product 
 
 	if result.Error != nil {
 		return fmt.Errorf("failed to update product: %w", result.Error)
-	}
-
-	if result.RowsAffected == 0 {
-		return fmt.Errorf("product not found")
 	}
 
 	return nil

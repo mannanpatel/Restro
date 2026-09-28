@@ -19,13 +19,21 @@ func NewAuthController(service services.IUserService) *AuthController {
 
 // Register registers a new user
 func (ac *AuthController) Register(c *gin.Context) {
-
-	var user models.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var req models.UserRegistrationRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, common.ApiErrorResponse("Invalid request body, Error: "+err.Error(), nil))
 		return
 	}
 
+	user := models.User{
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
+		Email:     req.Email,
+		Password:  req.Password,
+		Address:   req.Address,
+		Type:      req.Type,
+		Age:       req.Age,
+	}
 	err := ac.service.Register(&user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, common.ApiErrorResponse("Registration failed, Error: "+err.Error(), nil))
@@ -46,7 +54,7 @@ func (ac *AuthController) Login(c *gin.Context) {
 
 	resp, err := ac.service.Login(req)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to authenticate user"})
 		return
 	}
 	c.JSON(http.StatusOK, resp)
