@@ -22,6 +22,9 @@ func NewCartService(cartRepository repository.ICartRepository, productRepository
 }
 
 func (cs *cartService) AddToCart(ctx context.Context, userID int, req models.AddCartItemRequest) error {
+	if userID <= 0 || req.ProductID <= 0 || req.Quantity <= 0 {
+		return errors.New("invalid cart request")
+	}
 	// 1. Fetch the product from the database to ensure it exists
 	product, err := cs.productRepository.GetProductById(ctx, req.ProductID)
 	if err != nil {
@@ -39,4 +42,32 @@ func (cs *cartService) AddToCart(ctx context.Context, userID int, req models.Add
 		return err
 	}
 	return nil
+}
+
+func (cs *cartService) GetCart(ctx context.Context, userID int) (*models.Cart, error) {
+	if userID <= 0 {
+		return nil, errors.New("invalid user id")
+	}
+	return cs.cartRepository.GetCartByUserID(ctx, userID)
+}
+
+func (cs *cartService) UpdateCartItemQuantity(ctx context.Context, userID int, itemID int, qty int) error {
+	if userID <= 0 || itemID <= 0 || qty <= 0 {
+		return errors.New("invalid cart request")
+	}
+	return cs.cartRepository.UpdateCartItemQuantity(ctx, userID, itemID, qty)
+}
+
+func (cs *cartService) RemoveCartItem(ctx context.Context, userID int, itemID int) error {
+	if userID <= 0 || itemID <= 0 {
+		return errors.New("invalid cart request")
+	}
+	return cs.cartRepository.DeleteCartItem(ctx, userID, itemID)
+}
+
+func (cs *cartService) ClearCart(ctx context.Context, userID int) error {
+	if userID <= 0 {
+		return errors.New("invalid user id")
+	}
+	return cs.cartRepository.ClearCart(ctx, userID)
 }

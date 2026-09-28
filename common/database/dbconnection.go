@@ -31,23 +31,16 @@ func DBConnection(cfg *config.Config) *gorm.DB {
 		log.Fatalf("Database ping failed: %v", err)
 	}
 
-	// if err := DB.AutoMigrate(
-	// 	&models.User{},
-	// 	&models.Product{},
-	// 	&models.Cart{},
-	// 	&models.CartItem{},
-	// 	&models.Order{},
-	// 	&models.OrderItem{},
-	// 	&models.Payment{},
-	// ); err != nil {
-	// 	log.Fatalf("Database migration failed: %v", err)
-	// }
-
 	sqlDB.SetMaxOpenConns(25)
 	sqlDB.SetMaxIdleConns(10)
 	sqlDB.SetConnMaxLifetime(5 * time.Minute)
 
+	if err := Migrate(db); err != nil {
+		log.Fatalf("Database migration failed: %v", err)
+	}
+
 	log.Println("MySQL connected successfully!")
+	log.Println("Database schema migration completed successfully!")
 
 	return db
 }

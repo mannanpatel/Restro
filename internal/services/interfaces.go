@@ -26,4 +26,8 @@ type IProductService interface {
 
 type ICartService interface {
 	AddToCart(ctx context.Context, userID int, req models.AddCartItemRequest) error
+	GetCart(ctx context.Context, userID int) (*models.Cart, error)
+	UpdateCartItemQuantity(ctx context.Context, userID int, itemID int, qty int) error
+	RemoveCartItem(ctx context.Context, userID int, itemID int) error
+	ClearCart(ctx context.Context, userID int) error
 }

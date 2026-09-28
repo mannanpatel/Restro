@@ -8,7 +8,7 @@ type User struct {
 	gorm.Model
 	FirstName string `json:"first_name" binding:"required" gorm:"not null"`
 	LastName  string `json:"last_name" binding:"required" gorm:"not null"`
-	Email     string `json:"email" binding:"required,email" gorm:"uniqueIndex;not null"`
+	Email     string `json:"email" binding:"required,email" gorm:"type:varchar(191);uniqueIndex;not null"`
 	Password  string `json:"-" gorm:"not null"`
 	CartId    string `json:"cart_id"`
 	Address   string `json:"address"`

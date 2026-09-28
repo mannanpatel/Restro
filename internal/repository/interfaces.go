@@ -28,5 +28,8 @@ type IUserRepository interface {
 
 type ICartRepository interface {
 	AddOrUpdateCartItem(ctx context.Context, userID int, productID int, qty int, price float64) error
-	// GetCartByUserID(ctx context.Context, userID uint) (*models.Cart, error)
+	GetCartByUserID(ctx context.Context, userID int) (*models.Cart, error)
+	UpdateCartItemQuantity(ctx context.Context, userID int, itemID int, qty int) error
+	DeleteCartItem(ctx context.Context, userID int, itemID int) error
+	ClearCart(ctx context.Context, userID int) error
 }

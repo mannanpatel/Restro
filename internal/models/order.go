@@ -14,7 +14,7 @@ type Order struct {
 
 type OrderItem struct {
 	gorm.Model
-	OrderID   int     `json:"order_id" gorm:"not null;index"`
+	OrderID   uint    `json:"order_id" gorm:"not null;index"`
 	ProductID int     `json:"product_id" gorm:"not null;index"` // Product ID
 	Quantity  int     `json:"quantity" gorm:"not null;default:1"`
 	UnitPrice float64 `json:"unit_price" gorm:"type:decimal(10,2);not null"` // snapshot price
