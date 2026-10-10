@@ -8,6 +8,7 @@ type Config struct {
 	Database DatabaseConfig
 	Server   ServerConfig
 	Log      LoggingConfig
+	Razorpay RazorpayConfig
 }
 
 func Load() (*Config, error) {
@@ -15,6 +16,7 @@ func Load() (*Config, error) {
 		Database: loadDatabaseConfig(),
 		Server:   loadServerConfig(),
 		Log:      loadLoggingConfig(),
+		Razorpay: loadRazorpayConfig(),
 	}
 	if err := cfg.Validate(); err != nil {
 		return nil, err

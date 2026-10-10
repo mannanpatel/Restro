@@ -12,7 +12,6 @@ func SetupRoutes(r *gin.Engine, db *gorm.DB) {
 	registerProductRoutes(r)
 	registerUserRoutes(r)
 	registerCartRoutes(r)
-
-	// registerOrderRoutes(r)
-	// registerPaymentRoutes(r)
+	registerOrderRoutes(r)
+	registerPaymentRoutes(r)
 }

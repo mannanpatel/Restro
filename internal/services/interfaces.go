@@ -31,3 +31,16 @@ type ICartService interface {
 	RemoveCartItem(ctx context.Context, userID int, itemID int) error
 	ClearCart(ctx context.Context, userID int) error
 }
+
+type IOrderService interface {
+	CreateFromCart(ctx context.Context, userID int) (*models.Order, error)
+	GetByID(ctx context.Context, userID int, orderID uint) (*models.Order, error)
+	ListByUser(ctx context.Context, userID int) ([]models.Order, error)
+	ListAll(ctx context.Context) ([]models.Order, error)
+	UpdateStatus(ctx context.Context, orderID uint, status string) error
+}
+
+type IPaymentService interface {
+	CreateOrder(ctx context.Context, userID int, orderID uint) (*models.CreatePaymentOrderResponse, error)
+	VerifyPayment(ctx context.Context, userID int, req models.VerifyPaymentRequest) error
+}

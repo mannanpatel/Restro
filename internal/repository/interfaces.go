@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/mannanpatel/Restro/internal/models"
 )
@@ -32,4 +33,19 @@ type ICartRepository interface {
 	UpdateCartItemQuantity(ctx context.Context, userID int, itemID int, qty int) error
 	DeleteCartItem(ctx context.Context, userID int, itemID int) error
 	ClearCart(ctx context.Context, userID int) error
+}
+
+type IOrderRepository interface {
+	CreateFromCart(ctx context.Context, userID int) (*models.Order, error)
+	GetByID(ctx context.Context, userID int, orderID uint) (*models.Order, error)
+	ListByUser(ctx context.Context, userID int) ([]models.Order, error)
+	ListAll(ctx context.Context) ([]models.Order, error)
+	UpdateStatus(ctx context.Context, orderID uint, status string) error
+}
+
+type IPaymentRepository interface {
+	FindByOrderID(ctx context.Context, userID int, orderID uint) (*models.Payment, error)
+	FindByRazorpayOrderID(ctx context.Context, userID int, razorpayOrderID string) (*models.Payment, error)
+	Create(ctx context.Context, payment *models.Payment) error
+	MarkPaid(ctx context.Context, userID int, orderID uint, razorpayPaymentID string, signature string, paidAt time.Time) error
 }
