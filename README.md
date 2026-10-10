@@ -109,11 +109,6 @@ DB_NAME=restro
 # Logging
 LOG_LEVEL=debug             # debug | info | warn | error
 LOG_FORMAT=text             # text | json
-EXTENDED_LOGGING=false
-
-# Razorpay (optional — required only for payment endpoints)
-RAZORPAY_KEY_ID=
-RAZORPAY_KEY_SECRET=
 ```
 
 > ⚠️ `.env` is git-ignored. Never commit real credentials.
@@ -154,11 +149,6 @@ go test ./...
 | `DB_NAME` | ✅ | MySQL database name |
 | `LOG_LEVEL` | ✅ | Logging verbosity |
 | `LOG_FORMAT` | ✅ | Log output format |
-| `EXTENDED_LOGGING` | ❌ | Set to `true` for verbose logs |
-| `RAZORPAY_KEY_ID` | ❌ | Razorpay key ID (needed for payments) |
-| `RAZORPAY_KEY_SECRET` | ❌ | Razorpay key secret (needed for payments) |
-
-Startup fails fast with a clear error if any required variable is missing.
 
 ---
 
@@ -316,9 +306,7 @@ curl -X POST http://localhost:8085/orders \
    }
    ```
 
-5. The server validates the HMAC-SHA256 signature with `RAZORPAY_KEY_SECRET` and marks the order as paid only if it matches.
-
-If the Razorpay credentials are not set, the server still starts, but payment endpoints respond with `503 Service Unavailable`.
+5. The server validates the HMAC-SHA256 signature and marks the order as paid only if it matches.
 
 ---
 
@@ -350,7 +338,3 @@ Services and repositories are defined behind interfaces, so handlers and busines
 4. Open a pull request describing the change and how it was tested.
 
 ---
-
-## 📄 License
-
-This project is currently unlicensed. Add a `LICENSE` file to define how others may use it.
